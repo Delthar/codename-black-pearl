@@ -39,7 +39,7 @@ public class ShipController : MonoBehaviour
         }
 
         angularVelocity = Mathf.Clamp(angularVelocity, -maxRotationSpeed, maxRotationSpeed);
-        forwardVelocity = Mathf.Clamp(forwardVelocity, -maxAccelerationSpeed, maxAccelerationSpeed);
+        forwardVelocity = Mathf.Clamp(forwardVelocity, -maxAccelerationSpeed * 0.25f, maxAccelerationSpeed);
 
         float windForce = Vector2.Dot(transform.up, WindController.Instance.GetWindDirection()) * WindController.Instance.GetWindForce();
 
