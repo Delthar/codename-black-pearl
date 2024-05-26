@@ -49,7 +49,6 @@ public class MapGenerator : MonoBehaviour
         {
             for (int x = 0; x < mapWidth; x++)
             {
-                // Debug.Log(mapData[x, y]);
                 if(mapData[x, y] == 1)
                 {
                     terrainTileMap.SetTile(new Vector3Int(x, y), ruleTile);
