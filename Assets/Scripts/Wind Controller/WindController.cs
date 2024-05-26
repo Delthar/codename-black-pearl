@@ -9,11 +9,15 @@ public class WindController : MonoBehaviour
     [SerializeField] private Vector2 windDirection;
     [SerializeField] private float windForce = 1;
 
-    void Awake()
+    private void Awake()
     {
         Instance = this;
     }
 
+    /// <summary>
+    /// Diese methode gibt dir die wind richtung zurück lel.
+    /// </summary>
+    /// <returns></returns>
     public Vector2 GetWindDirection() => windDirection;
     public float GetWindForce() => windForce;
 
