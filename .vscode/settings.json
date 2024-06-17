@@ -56,5 +56,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "Project Black Pearl.sln"
+    "dotnet.defaultSolution": "codename-black-pearl.sln"
 }
