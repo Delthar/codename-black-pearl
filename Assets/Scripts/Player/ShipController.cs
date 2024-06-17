@@ -63,7 +63,7 @@ public class ShipController : MonoBehaviour
 
         if(forwardVelocity != currentForwardVelocity)
         {
-            OnVelocityChanged.Invoke(this, new OnVelocityChangedEventArgs { oldVelocity = currentForwardVelocity, newVelocity = forwardVelocity, maxVelocity = maxAccelerationSpeed });
+            OnVelocityChanged?.Invoke(this, new OnVelocityChangedEventArgs { oldVelocity = currentForwardVelocity, newVelocity = forwardVelocity, maxVelocity = maxAccelerationSpeed });
             currentForwardVelocity = forwardVelocity;
         }
         

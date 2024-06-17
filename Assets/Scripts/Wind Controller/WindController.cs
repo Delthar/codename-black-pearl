@@ -67,7 +67,7 @@ public class WindController : MonoBehaviour
 
     private void InvokeOnWindForceEvent()
     {
-        OnWindForceChanged.Invoke(this, new OnWindForceChangedEventArgs
+        OnWindForceChanged?.Invoke(this, new OnWindForceChangedEventArgs
         {
             oldWindForce = currentWindForce,
             newWindForce = windForce,
@@ -77,7 +77,7 @@ public class WindController : MonoBehaviour
 
     private void InvokeOnWindDirectionEvent()
     {
-        OnWindDirectionChanged.Invoke(this, new OnWindDirectionChangedEventArgs
+        OnWindDirectionChanged?.Invoke(this, new OnWindDirectionChangedEventArgs
         {
             oldWindDirection = currentWindDirection,
             newWindDirection = windDirection,
