@@ -17,6 +17,8 @@ public class CannonController : MonoBehaviour
     [Tooltip("The angle a cannon can rotate to at the back of the ship")]
     [Range(90, 180)]
     [SerializeField] private float lowerAngle;
+
+    [SerializeField] private float fireForce = 30;
     
     private void Awake()
     {
@@ -31,42 +33,34 @@ public class CannonController : MonoBehaviour
 
     private void Aim()
     {
-        float angle = CalculateAngle();
-        Debug.Log(angle);
-        
+        (float, Vector3) data = CalculateAngle();
         if (PlayerInput.Instance.GetFireAction().WasPressedThisFrame())
         {
-            if (angle > upperAngle && angle < lowerAngle)
+            if (data.Item1 > upperAngle && data.Item1 < lowerAngle)
             {
-                Debug.Log("Right");
-                Fire(rightCannon.transform);
+                Fire(rightCannon.transform, data.Item2.normalized);
             }
-            else if (angle < -upperAngle && angle > -lowerAngle)
+            else if (data.Item1 < -upperAngle && data.Item1 > -lowerAngle)
             {
-                Debug.Log("Left");
-                Fire(leftCannon.transform);
-            }
-            else
-            {
-                Debug.Log("Deadzone");
+                Fire(leftCannon.transform, data.Item2.normalized);
             }
         }
     }
 
-    private void Fire(Transform cannonPosition)
+    private void Fire(Transform cannonPosition, Vector2 direction)
     {
         GameObject cannonball = ObjectPool.Instance.GetPoolObject();
         cannonball.GetComponent<IPoolable>().Initialize(cannonPosition);
-        cannonball.GetComponent<IFireable>().Fire(new Vector2(10, 10));   
+        cannonball.GetComponent<IFireable>().Fire(direction, fireForce);   
     }
 
-    private float CalculateAngle()
+    private (float, Vector3) CalculateAngle()
     {
         Vector3 cursorWorldPosition = Camera.main.ScreenToWorldPoint(Mouse.current.position.value);
         Vector3 worldDirection = cursorWorldPosition - transform.position;
         Vector3 localDirection = transform.InverseTransformDirection(worldDirection);
 
-        return Mathf.Atan2(localDirection.x, localDirection.y) * Mathf.Rad2Deg;
+        return (Mathf.Atan2(localDirection.x, localDirection.y) * Mathf.Rad2Deg, worldDirection);
     }
 
 }

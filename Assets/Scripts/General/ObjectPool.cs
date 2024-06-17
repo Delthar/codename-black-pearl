@@ -8,10 +8,10 @@ public class ObjectPool : MonoBehaviour
 
     [SerializeField] private GameObject objectPrefab;
 
-    private List<GameObject> pool;
+    private List<GameObject> pool = new List<GameObject>();
 
     [Range(1, 30)]
-    [SerializeField] private int poolStartSize = 10;
+    [SerializeField] private int poolStartSize = 30;
 
     private void Awake() 
     {
@@ -25,15 +25,24 @@ public class ObjectPool : MonoBehaviour
 
     public GameObject GetPoolObject()
     {
-        GameObject item = pool.Where(item => item.activeSelf == false).First() ?? GeneratePoolObject();
+        GameObject item = pool.Where(item => item.activeSelf == false).FirstOrDefault() ?? GeneratePoolObject();
         item.SetActive(true);
         return item;
     }
 
+    public void ReturnPoolObject(GameObject item)
+    {
+        if(pool.Contains(item))
+        {
+            item.SetActive(false);
+        }
+    }
+
     private GameObject GeneratePoolObject()
     {
-        GameObject item = Instantiate(objectPrefab, transform.position, Quaternion.identity);
+        GameObject item = Instantiate(objectPrefab, transform.position, Quaternion.identity, transform);
         pool.Add(item);
+        item.SetActive(false);
         return item;
     }
 }
