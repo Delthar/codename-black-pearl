@@ -76,14 +76,38 @@ public class WindController : MonoBehaviour
     }
 
     /// <summary>
-    /// Diese methode gibt dir die wind richtung zurück lel.
+    /// Gets the current normalized wind direction.
     /// </summary>
     /// <returns></returns>
-    public Vector2 GetWindDirection() => windDirection.normalized;
+    public Vector2 GetWindDirectionNormalized() => windDirection.normalized;
+
+    /// <summary>
+    /// Gets the current wind direction.
+    /// </summary>
+    /// <returns></returns>
+    public Vector2 GetWindDirection() => windDirection;
+
+    /// <summary>
+    /// Gets the current wind force.
+    /// </summary>
+    /// <returns></returns>
     public float GetWindForce() => windForce;
 
+    /// <summary>
+    /// Sets the wind direction.
+    /// </summary>
+    /// <param name="windDirection"></param>
     public void SetWindDirection(Vector2 windDirection) => this.windDirection = windDirection;
+
+    /// <summary>
+    /// Sets the wind force.
+    /// </summary>
+    /// <param name="windForce"></param>
     public void SetWindForce(float windForce) => this.windForce = windForce;
+
+    /// <summary>
+    /// Randomizes the wind direction and force.
+    /// </summary>
     public void Randomize()
     {
         SetWindDirection(new Vector2(UnityEngine.Random.Range(-1f, 1f), UnityEngine.Random.Range(-1f, 1f)));
