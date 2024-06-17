@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class ShipController : MonoBehaviour
 {
@@ -28,6 +29,7 @@ public class ShipController : MonoBehaviour
     
     private void Update()
     {
+        
         Vector2 input = PlayerInput.Instance.GetMoveInput();
         
         angularVelocity -= input.x * Time.deltaTime * rotationSpeed;
@@ -44,6 +46,7 @@ public class ShipController : MonoBehaviour
         float windForce = Vector2.Dot(transform.up, WindController.Instance.GetWindDirection()) * WindController.Instance.GetWindForce();
 
         // TODO: Add Wind Force
+
         Vector3 forwardInput = transform.up * forwardVelocity;
         rb.velocity = forwardInput;
         rb.angularVelocity = forwardVelocity >= 0 ? angularVelocity : -angularVelocity ;

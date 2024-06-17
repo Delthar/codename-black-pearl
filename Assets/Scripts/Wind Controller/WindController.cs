@@ -14,6 +14,11 @@ public class WindController : MonoBehaviour
         Instance = this;
     }
 
+    private void OnDrawGizmos()
+    {
+        
+    }
+
     /// <summary>
     /// Diese methode gibt dir die wind richtung zurück lel.
     /// </summary>
@@ -23,4 +28,7 @@ public class WindController : MonoBehaviour
 
     public void SetWindDirection(Vector2 windDirection) => this.windDirection = windDirection;
     public void SetWindForce(float windForce) => this.windForce = windForce;
+
+
+
 }
