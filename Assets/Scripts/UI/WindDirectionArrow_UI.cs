@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
@@ -15,6 +13,8 @@ public class WindDirectionArrow_UI : MonoBehaviour
     [SerializeField] private Ease fillEase = Ease.Unset;
     [SerializeField] private Ease rotationEase = Ease.Unset;
 
+    #region Unity Methods
+
     private void OnEnable()
     {
         WindController.Instance.OnWindDirectionChanged += WindController_OnWindDirectionChanged;
@@ -26,6 +26,10 @@ public class WindDirectionArrow_UI : MonoBehaviour
         WindController.Instance.OnWindDirectionChanged -= WindController_OnWindDirectionChanged;
         WindController.Instance.OnWindForceChanged -= WindController_OnWindForceChanged;
     }
+
+    #endregion
+
+    #region Events
 
     private void WindController_OnWindForceChanged(object sender, WindController.OnWindForceChangedEventArgs e)
     {
@@ -42,6 +46,10 @@ public class WindDirectionArrow_UI : MonoBehaviour
         UpdateArrowRotation(e.newWindDirection);
     }
 
+    #endregion
+
+    #region Private Methods
+
     private void UpdateArrowRotation(Vector2 direction)
     {
         Quaternion rotation = Quaternion.FromToRotation(Vector2.up, direction);
@@ -52,4 +60,6 @@ public class WindDirectionArrow_UI : MonoBehaviour
             }).SetEase(rotationEase);
         
     }
+
+    #endregion
 }

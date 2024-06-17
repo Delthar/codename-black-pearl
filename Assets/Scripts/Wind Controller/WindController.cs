@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class WindController : MonoBehaviour
@@ -21,13 +19,20 @@ public class WindController : MonoBehaviour
         public Vector2 newWindDirection;
     }
 
+    [Tooltip("Wind Direction")]
     [SerializeField] private Vector2 windDirection;
+
+    [Tooltip("Wind Force")]
     [SerializeField] private float windForce = 1;
+
+    [Tooltip("Max Wind Speed")]
     [Range(0, 5)]
     [SerializeField] private float maxWindSpeed = 5;
 
     private Vector2 currentWindDirection;
     private float currentWindForce;
+
+    #region Unity Methods
 
     private void Awake()
     {
@@ -56,6 +61,10 @@ public class WindController : MonoBehaviour
         }
     }
 
+    #endregion
+
+    #region Private Methods
+
     private void InvokeOnWindForceEvent()
     {
         OnWindForceChanged.Invoke(this, new OnWindForceChangedEventArgs
@@ -74,6 +83,10 @@ public class WindController : MonoBehaviour
             newWindDirection = windDirection,
         });
     }
+
+    #endregion
+
+    #region Public Methods
 
     /// <summary>
     /// Gets the current normalized wind direction.
@@ -114,6 +127,6 @@ public class WindController : MonoBehaviour
         SetWindForce(UnityEngine.Random.Range(0f, maxWindSpeed));
     }
 
-
+    #endregion
 
 }

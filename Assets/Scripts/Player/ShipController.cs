@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
@@ -6,6 +7,14 @@ using UnityEngine.InputSystem;
 
 public class ShipController : MonoBehaviour
 {
+    public event EventHandler<OnVelocityChangedEventArgs> OnVelocityChanged;
+    public class OnVelocityChangedEventArgs : EventArgs
+    {
+        public float maxVelocity;
+        public float oldVelocity;
+        public float newVelocity;
+    }
+
     [SerializeField] private float accelerationSpeed = 5;
     [SerializeField] private float rotationSpeed = 10;
     [SerializeField] private float maxRotationSpeed = 10f;
@@ -15,6 +24,8 @@ public class ShipController : MonoBehaviour
     private Rigidbody2D rb;
     private float forwardVelocity;
     private float angularVelocity;
+
+    private float currentForwardVelocity;
 
     private void Awake()
     {
@@ -50,7 +61,11 @@ public class ShipController : MonoBehaviour
         rb.velocity = forwardInput + wind;
         rb.angularVelocity = forwardVelocity >= 0 ? angularVelocity : -angularVelocity ;
 
-
+        if(forwardVelocity != currentForwardVelocity)
+        {
+            OnVelocityChanged.Invoke(this, new OnVelocityChangedEventArgs { oldVelocity = currentForwardVelocity, newVelocity = forwardVelocity, maxVelocity = maxAccelerationSpeed });
+            currentForwardVelocity = forwardVelocity;
+        }
         
     }
 }
