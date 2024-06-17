@@ -12,8 +12,7 @@ public class WindControllerEditor : Editor
         if(GUILayout.Button("Randomize"))
         {
             WindController windController = (WindController)target;
-            windController.SetWindDirection(new Vector2(Random.Range(-1f, 1f), Random.Range(-1f, 1f)));
-            windController.SetWindForce(Random.Range(0f, 3f));
+            windController.Randomize();
         }
     }
 }

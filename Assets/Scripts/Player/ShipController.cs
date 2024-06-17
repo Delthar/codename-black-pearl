@@ -45,10 +45,9 @@ public class ShipController : MonoBehaviour
 
         float windForce = Vector2.Dot(transform.up, WindController.Instance.GetWindDirection()) * WindController.Instance.GetWindForce();
 
-        // TODO: Add Wind Force
-
         Vector3 forwardInput = transform.up * forwardVelocity;
-        rb.velocity = forwardInput;
+        Vector3 wind = forwardInput.normalized * windForce;
+        rb.velocity = forwardInput + wind;
         rb.angularVelocity = forwardVelocity >= 0 ? angularVelocity : -angularVelocity ;
 
 
