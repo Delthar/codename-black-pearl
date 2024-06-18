@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
@@ -14,6 +15,7 @@ public class MapGenerator : MonoBehaviour
     public int mapWidth = 500;
     public int mapHeight = 500;
     public float randomScale = 1;
+    public float randomModulo = 0.05f;
 
     [Range(0f, 100f)]
     public float scale = 1.0F;
@@ -26,10 +28,10 @@ public class MapGenerator : MonoBehaviour
     public void GenerateMap()
     {
         ClearMap();
-
-        float randomX = Random.Range(-9999, 9999);
-        float randomY = Random.Range(-9999, 9999);
+        float randomX = Random.Range(-99999, 99999);
+        float randomY = Random.Range(-99999, 99999);
         float scale = this.scale + Random.Range(-randomScale, randomScale);
+        float modulo = this.modulo + Random.Range(-randomModulo, randomModulo);
         Vector3Int offset = new Vector3Int((int)(mapWidth * .5f), (int)(mapHeight * .5f));
 
         for (float y = 0f; y < mapHeight; y++)

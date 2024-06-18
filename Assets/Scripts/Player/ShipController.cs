@@ -1,9 +1,5 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class ShipController : MonoBehaviour
 {
@@ -20,6 +16,7 @@ public class ShipController : MonoBehaviour
     [SerializeField] private float maxRotationSpeed = 10f;
     [SerializeField] private float maxAccelerationSpeed = 10f;
     [SerializeField] private float decelerateSpeedOnHit = 10f;
+    [SerializeField, Range(0, 0.9f)] private float windImpactStrength = 0.45f;
 
     private Rigidbody2D rb;
     private float forwardVelocity;
@@ -30,6 +27,11 @@ public class ShipController : MonoBehaviour
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D> ();
+    }
+
+    private void Start() 
+    {
+        UpdateCurrentVelocity();
     }
 
     private void OnCollisionStay2D(Collision2D other)
@@ -51,21 +53,30 @@ public class ShipController : MonoBehaviour
             angularVelocity -= (angularVelocity > 0 ? Time.deltaTime : -Time.deltaTime) * rotationSpeed;
         }
 
+        
+        // Angular Velocity
         angularVelocity = Mathf.Clamp(angularVelocity, -maxRotationSpeed, maxRotationSpeed);
-        forwardVelocity = Mathf.Clamp(forwardVelocity, -maxAccelerationSpeed * 0.25f, maxAccelerationSpeed);
-
-        float windForce = Vector2.Dot(transform.up, WindController.Instance.GetWindDirection()) * WindController.Instance.GetWindForce();
-
-        Vector3 forwardInput = transform.up * forwardVelocity;
-        Vector3 wind = forwardInput.normalized * windForce;
-        rb.velocity = forwardInput + wind;
         rb.angularVelocity = forwardVelocity >= 0 ? angularVelocity : -angularVelocity ;
+
+        // Forward Velocity
+        forwardVelocity = Mathf.Clamp(forwardVelocity, -maxAccelerationSpeed * 0.25f, maxAccelerationSpeed);
+        Vector2 windDirectionNormalized = WindController.Instance.GetWindDirectionNormalized();
+        float windForce = Vector2.Dot(transform.up, windDirectionNormalized) * WindController.Instance.GetWindForce();
+        float windForceDependent = windForce * Mathf.InverseLerp(0, maxAccelerationSpeed, forwardVelocity);
+        Vector3 forwardInput = transform.up * (forwardVelocity + (windForceDependent * windImpactStrength));
+        rb.velocity = forwardInput;
+
 
         if(forwardVelocity != currentForwardVelocity)
         {
-            OnVelocityChanged?.Invoke(this, new OnVelocityChangedEventArgs { oldVelocity = currentForwardVelocity, newVelocity = forwardVelocity, maxVelocity = maxAccelerationSpeed });
-            currentForwardVelocity = forwardVelocity;
+            UpdateCurrentVelocity();
         }
-        
+
+    }
+
+    private void UpdateCurrentVelocity()
+    {
+        OnVelocityChanged?.Invoke(this, new OnVelocityChangedEventArgs { oldVelocity = currentForwardVelocity, newVelocity = forwardVelocity, maxVelocity = maxAccelerationSpeed });
+        currentForwardVelocity = forwardVelocity;
     }
 }
