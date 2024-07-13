@@ -57,7 +57,7 @@ public class Cannonball : MonoBehaviour, IPoolable, IFireable
         transform.rotation = initializationPoint.rotation;
     }
 
-    public void Fire(Vector2 direction, float force, float distance, GameObject shooter)
+    public void Fire(GameObject shooter, Vector2 direction, float force, float distance)
     {
         owner = shooter;
         maxDistance = distance;
