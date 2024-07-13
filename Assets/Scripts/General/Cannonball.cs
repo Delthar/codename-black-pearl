@@ -39,5 +39,9 @@ public class Cannonball : MonoBehaviour, IPoolable, IFireable
         transform.rotation = initializationPoint.rotation;
     }
 
-    public void Fire(Vector2 direction, float force) => body.AddForce(direction.normalized * force, ForceMode2D.Impulse);
+    public void Fire(Vector2 direction, float force, float distance)
+    {
+        maxDistance = distance;
+        body.AddForce(direction.normalized * force, ForceMode2D.Impulse);
+    }
 }
