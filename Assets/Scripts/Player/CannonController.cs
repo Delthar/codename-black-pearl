@@ -14,34 +14,28 @@ public class CannonController : MonoBehaviour
     [Header("Cannon Parameters")]
     [Tooltip("The angle a cannon can rotate to at the front of the ship")]
     [Range(0, 90)]
-    [SerializeField] private float upperAngle;
+    [SerializeField] private float upperAngle = 15;
     [Tooltip("The angle a cannon can rotate to at the back of the ship")]
     [Range(90, 180)]
-    [SerializeField] private float lowerAngle;
+    [SerializeField] private float lowerAngle = 165;
     [Tooltip("The upper limit of charge that determines the maximum range of a shot")]
-    [Range(5, 20)]
-    [SerializeField] private float maximumCharge;
+    [Range(16, 24)]
+    [SerializeField] private float maximumCharge = 18;
     [Tooltip("The lower limit of charge that determines the minimum range of a shot")]
-    [Range(5, 20)]
-    [SerializeField] private float minimumCharge;
+    [Range(4, 16)]
+    [SerializeField] private float minimumCharge = 4;
     [Tooltip("The rate at which the charge amount is accumulated")]
     [Range(6, 12)]
-    [SerializeField] private float chargeMultiplier;
+    [SerializeField] private float chargeMultiplier = 6;
     [Tooltip("The amount of force of a shot")]
     [Range(8, 24)]
-    [SerializeField] private float fireForce;
+    [SerializeField] private float fireForce = 18;
 
     [Header("Cannon Status")]
     [Tooltip("The charged amount that determines the range of the cannonball")]
-    [Range(5, 20)]
-    [SerializeField] private float chargeAmount;
+    [Range(4, 24)]
+    [SerializeField] private float chargeAmount = 4;
     
-
-    private void Awake()
-    {
-        upperAngle = 15;
-        lowerAngle = 165;    
-    }
 
     private void Update() 
     {
