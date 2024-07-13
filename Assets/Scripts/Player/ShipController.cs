@@ -9,6 +9,7 @@ public class ShipController : MonoBehaviour
         public float maxVelocity;
         public float oldVelocity;
         public float newVelocity;
+        public float rigidbodySpeed;
     }
 
     [SerializeField] private float accelerationSpeed = 5;
@@ -42,7 +43,6 @@ public class ShipController : MonoBehaviour
     
     private void Update()
     {
-        
         Vector2 input = PlayerInput.Instance.GetMoveInput();
         
         angularVelocity -= input.x * Time.deltaTime * rotationSpeed;
@@ -52,7 +52,6 @@ public class ShipController : MonoBehaviour
         {
             angularVelocity -= (angularVelocity > 0 ? Time.deltaTime : -Time.deltaTime) * rotationSpeed;
         }
-
         
         // Angular Velocity
         angularVelocity = Mathf.Clamp(angularVelocity, -maxRotationSpeed, maxRotationSpeed);
@@ -65,18 +64,13 @@ public class ShipController : MonoBehaviour
         float windForceDependent = windForce * Mathf.InverseLerp(0, maxAccelerationSpeed, forwardVelocity);
         Vector3 forwardInput = transform.up * (forwardVelocity + (windForceDependent * windImpactStrength));
         rb.velocity = forwardInput;
-
-
-        if(forwardVelocity != currentForwardVelocity)
-        {
-            UpdateCurrentVelocity();
-        }
+        UpdateCurrentVelocity();
 
     }
 
     private void UpdateCurrentVelocity()
     {
-        OnVelocityChanged?.Invoke(this, new OnVelocityChangedEventArgs { oldVelocity = currentForwardVelocity, newVelocity = forwardVelocity, maxVelocity = maxAccelerationSpeed });
-        currentForwardVelocity = forwardVelocity;
+        OnVelocityChanged?.Invoke(this, new OnVelocityChangedEventArgs { oldVelocity = currentForwardVelocity, newVelocity = forwardVelocity, maxVelocity = maxAccelerationSpeed, rigidbodySpeed = rb.velocity.magnitude });
+        currentForwardVelocity = forwardVelocity; 
     }
 }

@@ -3,6 +3,7 @@ using UnityEngine;
 public class Cannonball : MonoBehaviour, IPoolable, IFireable
 {
     private Rigidbody2D body;
+    private GameObject owner;
     
     [SerializeField] private float maxLifeTime = 3;
     [SerializeField] private float maxDistance = 20;
@@ -15,6 +16,14 @@ public class Cannonball : MonoBehaviour, IPoolable, IFireable
     private void Awake()
     {
         body = GetComponent<Rigidbody2D>();
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if(other.gameObject != owner)
+        {
+            Debug.Log(other);
+        }
     }
 
     private void Update()
