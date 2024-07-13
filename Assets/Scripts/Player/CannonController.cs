@@ -87,7 +87,7 @@ public class CannonController : MonoBehaviour
     {
         GameObject cannonball = ObjectPool.Instance.GetPoolObject();
         cannonball.GetComponent<IPoolable>().Initialize(cannonPosition);
-        cannonball.GetComponent<IFireable>().Fire(direction, fireForce, chargeAmount);   
+        cannonball.GetComponent<IFireable>().Fire(gameObject, direction, fireForce, chargeAmount);   
     }
 
     private (float, Vector3) CalculateAngleDirection(Transform cannon)
