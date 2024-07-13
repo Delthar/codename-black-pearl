@@ -1,4 +1,5 @@
 using UnityEditor.EditorTools;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -17,11 +18,20 @@ public class CannonController : MonoBehaviour
     [Tooltip("The angle a cannon can rotate to at the back of the ship")]
     [Range(90, 180)]
     [SerializeField] private float lowerAngle;
+    [Tooltip("The maximum amount of distance a cannonball can be shot to")]
+    [Range(5, 20)]
+    [SerializeField] private float maximumFireDistance;
+    [Tooltip("The amount of force a cannonball is shot with")]
+    [Range(1, 30)]
+    [SerializeField] private float fireForce;
+    [Tooltip("The amount of force a cannonball is shot with")]
+    [Range(4, 8)]
+    [SerializeField] private float chargeMultiplier;
 
-    [SerializeField] private float fireForce = 30;
-
-    private float defaultRightCanonRotation;
-    private float defaultLeftCanonRotation;
+    [Header("Cannon Status")]
+    [Tooltip("The amount of force a cannonball is shot to")]
+    [Range(5, 20)]
+    [SerializeField] private float currentFireDistance;
     
     private void Awake()
     {
@@ -36,18 +46,44 @@ public class CannonController : MonoBehaviour
 
     private void Aim()
     {
-        (float, Vector3) data1 = CalculateAngle(rightCannon.transform);
-        (float, Vector3) data2 = CalculateAngle(leftCannon.transform);
-        if (PlayerInput.Instance.GetFireAction().WasPressedThisFrame())
+        (float angle, Vector3 direction) rightCannonAngleDirection = CalculateAngleDirection(rightCannon.transform);
+        (float angle, Vector3 direction) leftCannonAngleDirection = CalculateAngleDirection(leftCannon.transform);
+
+        // Start
+        if(PlayerInput.Instance.GetFireAction().WasPressedThisFrame())
         {
-            if (data1.Item1 > upperAngle && data1.Item1 < lowerAngle)
+            currentFireDistance = 5;
+        }
+        // Update
+        else if (PlayerInput.Instance.GetFireAction().IsPressed())
+        {
+            Debug.Log("Pressed");
+            if (currentFireDistance < maximumFireDistance)
             {
-                Fire(rightCannon.transform, data1.Item2.normalized);
+            Debug.Log(currentFireDistance);
+                if (rightCannonAngleDirection.angle > upperAngle && rightCannonAngleDirection.angle < lowerAngle)
+                {
+                    currentFireDistance += Time.deltaTime * chargeMultiplier;    
+                }
+                else if (leftCannonAngleDirection.angle < -upperAngle && leftCannonAngleDirection.angle > -lowerAngle)
+                {
+                    currentFireDistance += Time.deltaTime * chargeMultiplier;
+                }
             }
-            else if (data2.Item1 < -upperAngle && data2.Item1 > -lowerAngle)
+        }
+        // Stop
+        else if (PlayerInput.Instance.GetFireAction().WasReleasedThisFrame())
+        {
+            if (rightCannonAngleDirection.angle > upperAngle && rightCannonAngleDirection.angle < lowerAngle)
             {
-                Fire(leftCannon.transform, data2.Item2.normalized);
+                Fire(rightCannon.transform, rightCannonAngleDirection.direction.normalized);
             }
+            else if (leftCannonAngleDirection.angle < -upperAngle && leftCannonAngleDirection.angle > -lowerAngle)
+            {
+                Fire(leftCannon.transform, leftCannonAngleDirection.direction.normalized);
+            }
+
+            currentFireDistance = 5;
         }
     }
 
@@ -55,10 +91,10 @@ public class CannonController : MonoBehaviour
     {
         GameObject cannonball = ObjectPool.Instance.GetPoolObject();
         cannonball.GetComponent<IPoolable>().Initialize(cannonPosition);
-        cannonball.GetComponent<IFireable>().Fire(direction, fireForce);   
+        cannonball.GetComponent<IFireable>().Fire(direction, fireForce, currentFireDistance);   
     }
 
-    private (float, Vector3) CalculateAngle(Transform transform)
+    private (float, Vector3) CalculateAngleDirection(Transform transform)
     {
         Vector2 mousePos = Mouse.current.position.value;
         Vector3 cursorWorldPosition = Camera.main.ScreenToWorldPoint(mousePos);
