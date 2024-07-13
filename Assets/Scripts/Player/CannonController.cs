@@ -6,9 +6,9 @@ using UnityEngine.InputSystem;
 public class CannonController : MonoBehaviour
 {
     [Header("References")]
-    [Tooltip("The reference to the left cannon GameObject")]
+    [Tooltip("The reference to the left cannon")]
     [SerializeField] private GameObject leftCannon;
-    [Tooltip("The reference to the right cannon GamePbject")]
+    [Tooltip("The reference to the right cannon")]
     [SerializeField] private GameObject rightCannon;
 
     [Header("Cannon Parameters")]
@@ -18,21 +18,25 @@ public class CannonController : MonoBehaviour
     [Tooltip("The angle a cannon can rotate to at the back of the ship")]
     [Range(90, 180)]
     [SerializeField] private float lowerAngle;
-    [Tooltip("The maximum amount of distance a cannonball can be shot to")]
+    [Tooltip("The upper limit of charge that determines the maximum range of a shot")]
     [Range(5, 20)]
-    [SerializeField] private float maximumFireDistance;
-    [Tooltip("The amount of force a cannonball is shot with")]
-    [Range(1, 30)]
-    [SerializeField] private float fireForce;
-    [Tooltip("The amount of force a cannonball is shot with")]
-    [Range(4, 8)]
+    [SerializeField] private float maximumCharge;
+    [Tooltip("The lower limit of charge that determines the minimum range of a shot")]
+    [Range(5, 20)]
+    [SerializeField] private float minimumCharge;
+    [Tooltip("The rate at which the charge amount is accumulated")]
+    [Range(6, 12)]
     [SerializeField] private float chargeMultiplier;
+    [Tooltip("The amount of force of a shot")]
+    [Range(8, 24)]
+    [SerializeField] private float fireForce;
 
     [Header("Cannon Status")]
-    [Tooltip("The amount of force a cannonball is shot to")]
+    [Tooltip("The charged amount that determines the range of the cannonball")]
     [Range(5, 20)]
-    [SerializeField] private float currentFireDistance;
+    [SerializeField] private float chargeAmount;
     
+
     private void Awake()
     {
         upperAngle = 15;
@@ -44,32 +48,26 @@ public class CannonController : MonoBehaviour
         Aim(); 
     }
 
+
     private void Aim()
     {
         (float angle, Vector3 direction) rightCannonAngleDirection = CalculateAngleDirection(rightCannon.transform);
         (float angle, Vector3 direction) leftCannonAngleDirection = CalculateAngleDirection(leftCannon.transform);
 
-        // Start
-        if(PlayerInput.Instance.GetFireAction().WasPressedThisFrame())
+        if (PlayerInput.Instance.GetFireAction().IsPressed())
         {
-            currentFireDistance = 5;
-        }
-        // Update
-        else if (PlayerInput.Instance.GetFireAction().IsPressed())
-        {
-            if (currentFireDistance < maximumFireDistance)
+            if (chargeAmount < maximumCharge)
             {
                 if (rightCannonAngleDirection.angle > upperAngle && rightCannonAngleDirection.angle < lowerAngle)
                 {
-                    currentFireDistance += Time.deltaTime * chargeMultiplier;    
+                    chargeAmount += Time.deltaTime * chargeMultiplier;    
                 }
                 else if (leftCannonAngleDirection.angle < -upperAngle && leftCannonAngleDirection.angle > -lowerAngle)
                 {
-                    currentFireDistance += Time.deltaTime * chargeMultiplier;
+                    chargeAmount += Time.deltaTime * chargeMultiplier;
                 }
             }
         }
-        // Stop
         else if (PlayerInput.Instance.GetFireAction().WasReleasedThisFrame())
         {
             if (rightCannonAngleDirection.angle > upperAngle && rightCannonAngleDirection.angle < lowerAngle)
@@ -81,7 +79,7 @@ public class CannonController : MonoBehaviour
                 Fire(leftCannon.transform, leftCannonAngleDirection.direction.normalized);
             }
 
-            currentFireDistance = 5;
+            ResetCharge();
         }
     }
 
@@ -89,17 +87,18 @@ public class CannonController : MonoBehaviour
     {
         GameObject cannonball = ObjectPool.Instance.GetPoolObject();
         cannonball.GetComponent<IPoolable>().Initialize(cannonPosition);
-        cannonball.GetComponent<IFireable>().Fire(direction, fireForce, currentFireDistance, gameObject);   
+        cannonball.GetComponent<IFireable>().Fire(direction, fireForce, chargeAmount);   
     }
 
-    private (float, Vector3) CalculateAngleDirection(Transform transform)
+    private (float, Vector3) CalculateAngleDirection(Transform cannon)
     {
         Vector2 mousePos = Mouse.current.position.value;
         Vector3 cursorWorldPosition = Camera.main.ScreenToWorldPoint(mousePos);
-        Vector3 worldDirection = cursorWorldPosition - transform.position;
-        Vector3 localDirection = this.transform.InverseTransformDirection(worldDirection);
+        Vector3 worldDirection = cursorWorldPosition - cannon.position;
+        Vector3 localDirection = transform.InverseTransformDirection(worldDirection);
 
         return (Mathf.Atan2(localDirection.x, localDirection.y) * Mathf.Rad2Deg, worldDirection);
     }
 
+    private void ResetCharge() => chargeAmount = minimumCharge;
 }
