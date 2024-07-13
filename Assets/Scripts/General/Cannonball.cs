@@ -22,7 +22,11 @@ public class Cannonball : MonoBehaviour, IPoolable, IFireable
     {
         if(other.gameObject != owner)
         {
-            Debug.Log(other);
+            Unitialize();
+            if(other.TryGetComponent(out IDamageable damageable))
+            {
+                damageable.Damage();
+            }
         }
     }
 
@@ -36,9 +40,14 @@ public class Cannonball : MonoBehaviour, IPoolable, IFireable
 
         if(lifetime >= maxLifeTime || distanceTraveled > maxDistance)
         {
-            lifetime = 0;
-            ObjectPool.Instance.ReturnPoolObject(gameObject);
+            Unitialize();
         }
+    }
+
+    public void Unitialize()
+    {
+        lifetime = 0;
+        ObjectPool.Instance.ReturnPoolObject(gameObject);
     }
 
     public void Initialize(Transform initializationPoint)
@@ -48,8 +57,9 @@ public class Cannonball : MonoBehaviour, IPoolable, IFireable
         transform.rotation = initializationPoint.rotation;
     }
 
-    public void Fire(Vector2 direction, float force, float distance)
+    public void Fire(Vector2 direction, float force, float distance, GameObject shooter)
     {
+        owner = shooter;
         maxDistance = distance;
         body.AddForce(direction.normalized * force, ForceMode2D.Impulse);
     }

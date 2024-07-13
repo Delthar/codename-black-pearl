@@ -57,10 +57,8 @@ public class CannonController : MonoBehaviour
         // Update
         else if (PlayerInput.Instance.GetFireAction().IsPressed())
         {
-            Debug.Log("Pressed");
             if (currentFireDistance < maximumFireDistance)
             {
-            Debug.Log(currentFireDistance);
                 if (rightCannonAngleDirection.angle > upperAngle && rightCannonAngleDirection.angle < lowerAngle)
                 {
                     currentFireDistance += Time.deltaTime * chargeMultiplier;    
@@ -91,7 +89,7 @@ public class CannonController : MonoBehaviour
     {
         GameObject cannonball = ObjectPool.Instance.GetPoolObject();
         cannonball.GetComponent<IPoolable>().Initialize(cannonPosition);
-        cannonball.GetComponent<IFireable>().Fire(direction, fireForce, currentFireDistance);   
+        cannonball.GetComponent<IFireable>().Fire(direction, fireForce, currentFireDistance, gameObject);   
     }
 
     private (float, Vector3) CalculateAngleDirection(Transform transform)

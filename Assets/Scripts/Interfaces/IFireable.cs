@@ -2,5 +2,5 @@ using UnityEngine;
 
 public interface IFireable
 {
-    public abstract void Fire(Vector2 direction, float force, float distance);
+    public abstract void Fire(Vector2 direction, float force, float distance, GameObject shooter);
 }

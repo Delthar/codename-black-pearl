@@ -22,7 +22,7 @@ public class ShipController : MonoBehaviour
     private Rigidbody2D rb;
     private float forwardVelocity;
     private float angularVelocity;
-
+    private Vector2 currentInput;
     private float currentForwardVelocity;
 
     private void Awake()
@@ -40,15 +40,12 @@ public class ShipController : MonoBehaviour
         forwardVelocity -= (forwardVelocity > 0 ? Time.deltaTime : -Time.deltaTime) * decelerateSpeedOnHit;
     }
 
-    
     private void Update()
-    {
-        Vector2 input = PlayerInput.Instance.GetMoveInput();
-        
-        angularVelocity -= input.x * Time.deltaTime * rotationSpeed;
-        forwardVelocity += input.y * Time.deltaTime * accelerationSpeed;
+    {   
+        angularVelocity -= currentInput.x * Time.deltaTime * rotationSpeed;
+        forwardVelocity += currentInput.y * Time.deltaTime * accelerationSpeed;
 
-        if(input.x == 0)
+        if(currentInput.x == 0)
         {
             angularVelocity -= (angularVelocity > 0 ? Time.deltaTime : -Time.deltaTime) * rotationSpeed;
         }
@@ -65,7 +62,8 @@ public class ShipController : MonoBehaviour
         Vector3 forwardInput = transform.up * (forwardVelocity + (windForceDependent * windImpactStrength));
         rb.velocity = forwardInput;
         UpdateCurrentVelocity();
-
+        
+        currentInput = Vector2.zero;
     }
 
     private void UpdateCurrentVelocity()
@@ -73,4 +71,8 @@ public class ShipController : MonoBehaviour
         OnVelocityChanged?.Invoke(this, new OnVelocityChangedEventArgs { oldVelocity = currentForwardVelocity, newVelocity = forwardVelocity, maxVelocity = maxAccelerationSpeed, rigidbodySpeed = rb.velocity.magnitude });
         currentForwardVelocity = forwardVelocity; 
     }
+
+    public void SetForwardInput(float value) => currentInput.y = value;
+    public void SetAngularInput(float value) => currentInput.x = value;
+    
 }
