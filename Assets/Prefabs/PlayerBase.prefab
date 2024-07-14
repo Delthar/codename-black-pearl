@@ -157,22 +157,22 @@ MonoBehaviour:
   poleNestSpriteRenderer: {fileID: 8737911862996513685}
   shipParts:
   - hull: {fileID: 21300000, guid: b98f6b8ee1e51c54081432c4b713ada3, type: 3}
-    sail: {fileID: 21300000, guid: 9a1ec26f8b8635d4e813bdee1b2f9b6f, type: 3}
+    sail: {fileID: 21300000, guid: 5f37974b2151d254ea502a0c881c2c76, type: 3}
     frontSail: {fileID: 21300000, guid: beb61a1c1f3f00a42984b833f45ebbc8, type: 3}
     pole: {fileID: 21300000, guid: cf127ffde6a7220419994ac51acb23b2, type: 3}
     poleNest: {fileID: 21300000, guid: 6c6c766e8466b3a48b70b67d9626a232, type: 3}
   - hull: {fileID: 21300000, guid: bdff6908530859843a5a9f5cb8e579b4, type: 3}
-    sail: {fileID: 21300000, guid: 361cbaae7a5bba84ca07c60c0b794d27, type: 3}
+    sail: {fileID: 21300000, guid: 8bb19554a1402f342913f8188ff99207, type: 3}
     frontSail: {fileID: 21300000, guid: 7f2bccd29db5e45418d2871eb2ee7354, type: 3}
     pole: {fileID: 21300000, guid: 67a0424c25c9f374bb7f30ceeb979f1b, type: 3}
     poleNest: {fileID: 21300000, guid: f5a2a41c2a517a245af78fa419d9b935, type: 3}
   - hull: {fileID: 21300000, guid: fb92e4e50881e5147a2ec0e87737278e, type: 3}
-    sail: {fileID: 21300000, guid: 8ffa1397589b71b4f82756bb94805abd, type: 3}
+    sail: {fileID: 21300000, guid: 0a740b6067a93b342b7d21a8a8099452, type: 3}
     frontSail: {fileID: 21300000, guid: 7f2bccd29db5e45418d2871eb2ee7354, type: 3}
     pole: {fileID: 21300000, guid: 67a0424c25c9f374bb7f30ceeb979f1b, type: 3}
     poleNest: {fileID: 21300000, guid: f5a2a41c2a517a245af78fa419d9b935, type: 3}
   - hull: {fileID: 21300000, guid: c7e22593944a5754eb351e3c65739f70, type: 3}
-    sail: {fileID: 21300000, guid: aa8e784daed70df44b0c333006fafb43, type: 3}
+    sail: {fileID: 21300000, guid: 8ffa1397589b71b4f82756bb94805abd, type: 3}
     frontSail: {fileID: 21300000, guid: 7f2bccd29db5e45418d2871eb2ee7354, type: 3}
     pole: {fileID: 21300000, guid: 67a0424c25c9f374bb7f30ceeb979f1b, type: 3}
     poleNest: {fileID: 21300000, guid: f5a2a41c2a517a245af78fa419d9b935, type: 3}
@@ -397,33 +397,6 @@ Transform:
   - {fileID: 6628098681207841766}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!50 &2802080910727467644
-Rigidbody2D:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3568606633690371490}
-  m_BodyType: 0
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
-  m_GravityScale: 0
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_Interpolate: 1
-  m_SleepingMode: 1
-  m_CollisionDetection: 1
-  m_Constraints: 0
 --- !u!50 &2802080910727467644
 Rigidbody2D:
   serializedVersion: 4
@@ -834,15 +807,15 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 2
-  m_Sprite: {fileID: 21300000, guid: aa8e784daed70df44b0c333006fafb43, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 8ffa1397589b71b4f82756bb94805abd, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.66, y: 0.46}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 0
+  m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &7590448120993878117
