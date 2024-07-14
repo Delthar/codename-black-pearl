@@ -62,7 +62,7 @@ public class ShipController : MonoBehaviour
         Vector3 forwardInput = transform.up * (forwardVelocity + (windForceDependent * windImpactStrength));
         rb.velocity = forwardInput;
         UpdateCurrentVelocity();
-        
+
         currentInput = Vector2.zero;
     }
 
@@ -72,6 +72,9 @@ public class ShipController : MonoBehaviour
         currentForwardVelocity = forwardVelocity; 
     }
 
+    public float GetMaxAccelerationSpeed() => maxAccelerationSpeed;
+    public float GetForwardVelocity() => forwardVelocity;
+    public float GetAngularVelocity() => angularVelocity;
     public void SetForwardInput(float value) => currentInput.y = value;
     public void SetAngularInput(float value) => currentInput.x = value;
     
