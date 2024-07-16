@@ -28,11 +28,17 @@ public class CannonController : MonoBehaviour
     [Tooltip("The amount of force of a shot")]
     [Range(8, 18)]
     [SerializeField] private float fireForce;
+    [Tooltip("The cooldown before another shot can be made")]
+    [Range(2, 8)]
+    [SerializeField] private float fireCooldown;
 
     [Header("Cannon Status")]
-    [Tooltip("The currently charged amount that determines the range of the cannonball")]
+    [Tooltip("The current charged amount that determines the range of the cannonball")]
     [Range(4, 20)]
     [SerializeField] private float currentCharge;
+    [Tooltip("The current cooldown before another shot can be made")]
+    [Range(0, 8)]
+    [SerializeField] private float currentFireCooldown;
 
     #if UNITY_EDITOR
 
@@ -55,40 +61,45 @@ public class CannonController : MonoBehaviour
 
     private void Aim()
     {
-        (float angle, Vector3 targetDirection) rightCannonAngleDirection = CalculateAngleDirectionAndTarget(rightCannon.transform);
-        (float angle, Vector3 targetDirection) leftCannonAngleDirection = CalculateAngleDirectionAndTarget(leftCannon.transform);
-
-        if (PlayerInput.Instance.GetFireAction().IsPressed())
+        if (currentFireCooldown <= 0)
         {
-            if (currentCharge < maximumCharge) currentCharge += Time.deltaTime * chargeMultiplier;
+            (float angle, Vector3 targetDirection) rightCannonAngleDirection = CalculateAngleDirectionAndTarget(rightCannon.transform);
+            (float angle, Vector3 targetDirection) leftCannonAngleDirection = CalculateAngleDirectionAndTarget(leftCannon.transform);
 
-            if (-cannonAngle <= rightCannonAngleDirection.angle && rightCannonAngleDirection.angle <= cannonAngle)
+            if (PlayerInput.Instance.GetFireAction().IsPressed())
             {
-                DrawChargeLine(rightCannon.transform, rightCannon.transform.position + rightCannonAngleDirection.targetDirection * currentCharge, Color.red);    
+                if (currentCharge < maximumCharge) currentCharge += Time.deltaTime * chargeMultiplier;
+
+                if (-cannonAngle <= rightCannonAngleDirection.angle && rightCannonAngleDirection.angle <= cannonAngle)
+                {
+                    DrawChargeLine(rightCannon.transform, rightCannon.transform.position + rightCannonAngleDirection.targetDirection * currentCharge, Color.red);    
+                }
+                else if (-cannonAngle <= leftCannonAngleDirection.angle && leftCannonAngleDirection.angle <= cannonAngle)
+                {
+                    DrawChargeLine(leftCannon.transform, leftCannon.transform.position + leftCannonAngleDirection.targetDirection * currentCharge, Color.red);            
+                }
+                else
+                {
+                    DrawChargeLine(transform, transform.position, Color.white);
+                }
             }
-            else if (-cannonAngle <= leftCannonAngleDirection.angle && leftCannonAngleDirection.angle <= cannonAngle)
+            else if (PlayerInput.Instance.GetFireAction().WasReleasedThisFrame())
             {
-                DrawChargeLine(leftCannon.transform, leftCannon.transform.position + leftCannonAngleDirection.targetDirection * currentCharge, Color.red);            
-            }
-            else
-            {
-                DrawChargeLine(transform, transform.position, Color.white);
+                if (-cannonAngle <= rightCannonAngleDirection.angle && rightCannonAngleDirection.angle <= cannonAngle)
+                {
+                    Fire(rightCannon.transform, rightCannonAngleDirection.targetDirection);
+                }
+                else if (-cannonAngle <= leftCannonAngleDirection.angle && leftCannonAngleDirection.angle <= cannonAngle)
+                {
+                    Fire(leftCannon.transform, leftCannonAngleDirection.targetDirection);
+                }
+
+                ResetCharge();
+                ResetChargeLine();
+                ResetFireCooldown();
             }
         }
-        else if (PlayerInput.Instance.GetFireAction().WasReleasedThisFrame())
-        {
-             if (-cannonAngle <= rightCannonAngleDirection.angle && rightCannonAngleDirection.angle <= cannonAngle)
-            {
-                Fire(rightCannon.transform, rightCannonAngleDirection.targetDirection);
-            }
-            else if (-cannonAngle <= leftCannonAngleDirection.angle && leftCannonAngleDirection.angle <= cannonAngle)
-            {
-                Fire(leftCannon.transform, leftCannonAngleDirection.targetDirection);
-            }
-
-            ResetCharge();
-            ResetChargeLine();
-        }
+        else if (currentFireCooldown > 0) currentFireCooldown -= Time.deltaTime;
     }
 
     private (float, Vector3) CalculateAngleDirectionAndTarget(Transform relationPoint)
@@ -125,6 +136,8 @@ public class CannonController : MonoBehaviour
     }
 
     private void ResetCharge() => currentCharge = minimumCharge;
+
+    private void ResetFireCooldown() => currentFireCooldown = fireCooldown;
 
     private void Fire(Transform relationPoint, Vector2 targetDirection)
     {
