@@ -41,3 +41,18 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Water
+    uniqueID: 4019812869
+    locked: 0
+  - name: Terrain
+    uniqueID: 1712197345
+    locked: 0
+  - name: Canonball
+    uniqueID: 2203050105
+    locked: 0
+  - name: Player
+    uniqueID: 2369025297
+    locked: 0
+  - name: UI
+    uniqueID: 3615500595
+    locked: 0
