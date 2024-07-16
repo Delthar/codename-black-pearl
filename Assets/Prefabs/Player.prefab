@@ -785,6 +785,18 @@ PrefabInstance:
       propertyPath: m_FlipY
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6861961157337932418, guid: 1079f3cd3f3a3274d966e83d32fe6442, type: 3}
+      propertyPath: cannonSpriteRenderers.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6861961157337932418, guid: 1079f3cd3f3a3274d966e83d32fe6442, type: 3}
+      propertyPath: cannonSpriteRenderers.Array.data[0]
+      value: 
+      objectReference: {fileID: 51245356379487153}
+    - target: {fileID: 6861961157337932418, guid: 1079f3cd3f3a3274d966e83d32fe6442, type: 3}
+      propertyPath: cannonSpriteRenderers.Array.data[1]
+      value: 
+      objectReference: {fileID: 6086561853426427746}
     - target: {fileID: 6996864378712145712, guid: 1079f3cd3f3a3274d966e83d32fe6442, type: 3}
       propertyPath: m_FlipY
       value: 1
@@ -854,9 +866,19 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 4075567047403714129}
   m_SourcePrefab: {fileID: 100100000, guid: 1079f3cd3f3a3274d966e83d32fe6442, type: 3}
+--- !u!212 &51245356379487153 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 6764840448667742785, guid: 1079f3cd3f3a3274d966e83d32fe6442, type: 3}
+  m_PrefabInstance: {fileID: 6725991811496266224}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &699976335721306308 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6116263426742473012, guid: 1079f3cd3f3a3274d966e83d32fe6442, type: 3}
+  m_PrefabInstance: {fileID: 6725991811496266224}
+  m_PrefabAsset: {fileID: 0}
+--- !u!212 &6086561853426427746 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 657607095591841426, guid: 1079f3cd3f3a3274d966e83d32fe6442, type: 3}
   m_PrefabInstance: {fileID: 6725991811496266224}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &7723809334261410348 stripped

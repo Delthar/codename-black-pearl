@@ -24,6 +24,7 @@ public class ShipController : MonoBehaviour
     private float angularVelocity;
     private Vector2 currentInput;
     private float currentForwardVelocity;
+    private bool controllerEnabled;
 
     private void Awake()
     {
@@ -32,16 +33,22 @@ public class ShipController : MonoBehaviour
 
     private void Start() 
     {
+        controllerEnabled = true;
         UpdateCurrentVelocity();
     }
 
-    private void OnCollisionStay2D(Collision2D other)
+    private void OnCollisionEnter2D(Collision2D other)
     {
-        forwardVelocity -= (forwardVelocity > 0 ? Time.deltaTime : -Time.deltaTime) * decelerateSpeedOnHit;
+        // forwardVelocity -= (forwardVelocity > 0 ? Time.deltaTime : -Time.deltaTime) * decelerateSpeedOnHit;
+        forwardVelocity -= forwardVelocity > 0 ? forwardVelocity * 0.5f : -forwardVelocity * 0.5f;
+        // Stop();
     }
 
     private void Update()
-    {   
+    {
+        if (!controllerEnabled)
+            return;
+        
         angularVelocity -= currentInput.x * Time.deltaTime * rotationSpeed;
         forwardVelocity += currentInput.y * Time.deltaTime * accelerationSpeed;
 
@@ -77,5 +84,13 @@ public class ShipController : MonoBehaviour
     public float GetAngularVelocity() => angularVelocity;
     public void SetForwardInput(float value) => currentInput.y = value;
     public void SetAngularInput(float value) => currentInput.x = value;
+    public void Disable() => controllerEnabled = false;
+    public void Enable() => controllerEnabled = true;
+    public void Stop() 
+    {
+        forwardVelocity = 0;
+        angularVelocity = 0;
+    } 
+        
     
 }
