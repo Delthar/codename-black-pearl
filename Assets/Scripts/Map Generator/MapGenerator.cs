@@ -8,28 +8,27 @@ using UnityEngine.UI;
 
 public class MapGenerator : MonoBehaviour
 {
-    public RuleTile terrainTile;
-    public RuleTile wallsTile;
-    public TileBase waterTile;
-    public Tilemap wallsTileMap;
-    public Tilemap terrainTileMap;
-    public Tilemap waterTileMap;
+    [SerializeField] private PathNetwork pathNetwork;
+    [SerializeField] private RuleTile terrainTile;
+    [SerializeField] private TileBase waterTile;
+    [SerializeField] private Tilemap terrainTileMap;
+    [SerializeField] private Tilemap waterTileMap;
 
-    public int mapWidth = 500;
-    public int mapHeight = 500;
-    public float randomScale = 1;
-    public float randomModulo = 0.05f;
+    [SerializeField] private int mapWidth = 500;
+    [SerializeField] private int mapHeight = 500;
+    [SerializeField] private float randomScale = 1;
+    [SerializeField] private float randomModulo = 0.05f;
 
     private List<Vector2Int> terrainTilesPos;
     private List<Vector2Int> waterTilesPos;
 
     [Range(0f, 100f)]
-    public float scale = 1.0F;
+    [SerializeField] private float scale = 1.0F;
 
     [Range(0f, 10f)]
-    public float modulo = 1f;
+    [SerializeField] private float modulo = 1f;
     [Range(0f, 1f)]
-    public float clamp = 0.3f;
+    [SerializeField] private float clamp = 0.3f;
 
     public void GenerateMap()
     {
@@ -62,6 +61,8 @@ public class MapGenerator : MonoBehaviour
                 waterTileMap.SetTile((Vector3Int)position, waterTile);
             }
         }
+
+        pathNetwork.GenerateNodes();
 
         // for (int i = 0; i < 30; i++)
         // {
@@ -98,7 +99,6 @@ public class MapGenerator : MonoBehaviour
 
     private void ClearMap()
     {
-        wallsTileMap.ClearAllTiles();
         terrainTileMap.ClearAllTiles();
         waterTileMap.ClearAllTiles();
     }

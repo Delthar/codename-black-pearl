@@ -41,7 +41,6 @@ public class ShipController : MonoBehaviour
     {
         // forwardVelocity -= (forwardVelocity > 0 ? Time.deltaTime : -Time.deltaTime) * decelerateSpeedOnHit;
         forwardVelocity -= forwardVelocity > 0 ? forwardVelocity * 0.5f : -forwardVelocity * 0.5f;
-        // Stop();
     }
 
     private void Update()
