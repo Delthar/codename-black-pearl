@@ -1,9 +1,16 @@
-using UnityEditor.PackageManager;
+using System;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class CannonController : MonoBehaviour
 {
+    [Header("Static Event")]
+    [Tooltip("Triggers whenever a shot is fired")]
+    [SerializeField] public static EventHandler<OnAnyFireEventArgs> OnAnyFire;
+
+    [Header("Events")]
+    [Tooltip("")]
+    [SerializeField] public EventHandler OnFire;
+
     [Header("References")]
     [Tooltip("The reference to the left cannon")]
     [SerializeField] private GameObject leftCannon;
@@ -40,6 +47,12 @@ public class CannonController : MonoBehaviour
     [Range(0, 8)]
     [SerializeField] private float currentFireCooldown;
 
+    public class OnAnyFireEventArgs : EventArgs
+    {
+        public Transform firePosition;
+    }
+
+
     #if UNITY_EDITOR
 
     private void OnDrawGizmosSelected() 
@@ -53,11 +66,11 @@ public class CannonController : MonoBehaviour
     
     #endif
 
-
     private void Update() 
     {
         Aim();
     }
+
 
     private void Aim()
     {
@@ -88,10 +101,14 @@ public class CannonController : MonoBehaviour
                 if (-cannonAngle <= rightCannonAngleDirection.angle && rightCannonAngleDirection.angle <= cannonAngle)
                 {
                     Fire(rightCannon.transform, rightCannonAngleDirection.targetDirection);
+                    OnFire?.Invoke(this, EventArgs.Empty);
+                    OnAnyFire?.Invoke(this, new OnAnyFireEventArgs { firePosition = rightCannon.transform });
                 }
                 else if (-cannonAngle <= leftCannonAngleDirection.angle && leftCannonAngleDirection.angle <= cannonAngle)
                 {
                     Fire(leftCannon.transform, leftCannonAngleDirection.targetDirection);
+                    OnFire?.Invoke(this, EventArgs.Empty);
+                    OnAnyFire?.Invoke(this, new OnAnyFireEventArgs { firePosition = rightCannon.transform });
                 }
 
                 ResetCharge();
