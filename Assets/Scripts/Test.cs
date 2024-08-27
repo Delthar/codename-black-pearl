@@ -4,17 +4,34 @@ using UnityEngine;
 
 public class Test : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    [SerializeField] private PathNode start;
+    [SerializeField] private PathNode end;
+    private Pathfinding pathfinding;
+    List<PathNode> path = new List<PathNode>();
+
+    void Awake()
     {
-        
+        pathfinding = new Pathfinding();
     }
 
-    // Update is called once per frame
-    void Update()
+    void Start()
     {
-        var worldPos = Utils.GetMouseWorldPosition();
-        var col = Physics2D.OverlapPoint(worldPos);
-        Debug.Log(col != null);
+        path = pathfinding.FindPath(start, end);
+        Debug.Log(path.Count);
+    }
+
+    void OnDrawGizmos()
+    {
+        int pathCount = path.Count;
+        for(int i = 0; i < pathCount; i++)
+        {
+            Gizmos.color = Color.green;
+            Gizmos.DrawSphere(path[i].transform.position, 0.5f);
+            if(i < (pathCount - 1))
+            {
+                Gizmos.color = Color.red;
+                Gizmos.DrawLine(path[i].transform.position, path[i + 1].transform.position);
+            }
+        }
     }
 }

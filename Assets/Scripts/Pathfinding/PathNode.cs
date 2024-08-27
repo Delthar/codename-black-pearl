@@ -45,10 +45,18 @@ public class PathNode : MonoBehaviour
     private void Awake() => position = transform.position;
 
     #region Debug
+
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawSphere(transform.position, 0.25f);
+        Gizmos.DrawSphere(transform.position, 0.075f);
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawSphere(transform.position, 0.15f);
         if(!Application.isPlaying)
         {
             if(neighbor != null)
@@ -57,20 +65,6 @@ public class PathNode : MonoBehaviour
                 {
                     Gizmos.DrawLine(transform.position, pathNode.transform.position);
                 }
-            }
-        }
-    }
-
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawSphere(transform.position, 0.075f);
-        Gizmos.color = Color.red;
-        if (neighbor != null)
-        {
-            foreach (PathNode pathNode in neighbor)
-            {
-                Gizmos.DrawSphere(pathNode.transform.position, 0.075f);
             }
         }
     }
