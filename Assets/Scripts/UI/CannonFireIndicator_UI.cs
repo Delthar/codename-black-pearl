@@ -8,10 +8,10 @@ public class CannonFireIndicator_UI : MonoBehaviour
 {
     [Tooltip("The reference to the CannonController of the player")]
     [SerializeField] private CannonController cannonController;
+    [Tooltip("The reference to the Image")]
+    [SerializeField] private RectTransform imageRectTransform;
     [Tooltip("The reference to the Foreground")]
     [SerializeField] private Image foregroundImage;
-    [Tooltip("The reference to the Image")]
-    [SerializeField] private RectTransform indicatorRectTransform;
     [Tooltip("The reference to the Cooldown Text")]
     [SerializeField] private TMP_Text cooldownText;
     [Tooltip("The type of closing movement of the fire cooldown end")]
@@ -53,12 +53,12 @@ public class CannonFireIndicator_UI : MonoBehaviour
         float normalized = Mathf.InverseLerp(e.fireCooldown, 0, e.currentFireCooldown);
 
         cooldownText.text = (e.currentFireCooldown > 0) ? Mathf.Abs(e.currentFireCooldown).ToString("0.0") : string.Empty;
-        indicatorRectTransform.localScale = Vector3.one * (1 - imageScaleMultiplier + normalized * imageScaleMultiplier);
+        imageRectTransform.localScale = Vector3.one * (1 - imageScaleMultiplier + normalized * imageScaleMultiplier);
         foregroundImage.fillAmount = normalized;
     }
 
     private void CannonController_OnFireCooldownEnd(object sender, EventArgs e)
     {
-        indicatorRectTransform.DOPunchScale(Vector3.one * fireCooldownEndIntensity, fireCooldownEndDuration, fireCooldownEndVibrato).SetEase(fireCooldownEndEase);
+        imageRectTransform.DOPunchScale(Vector3.one * fireCooldownEndIntensity, fireCooldownEndDuration, fireCooldownEndVibrato).SetEase(fireCooldownEndEase);
     }
 }
