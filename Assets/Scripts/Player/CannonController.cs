@@ -10,6 +10,10 @@ public class CannonController : MonoBehaviour
     [Header("Events")]
     [Tooltip("")]
     [SerializeField] public EventHandler OnFire;
+    [Tooltip("")]
+    [SerializeField] public EventHandler<OnFireCooldownChangedEventArgs> OnFireCooldownChanged;
+    [Tooltip("")]
+    [SerializeField] public EventHandler OnFireCooldownEnd;
 
     [Header("References")]
     [Tooltip("The reference to the left cannon")]
@@ -52,6 +56,12 @@ public class CannonController : MonoBehaviour
         public Transform firePosition;
     }
 
+    public class OnFireCooldownChangedEventArgs : EventArgs
+    {
+        public float fireCooldown;
+        public float currentFireCooldown;
+    }
+
 
     #if UNITY_EDITOR
 
@@ -69,6 +79,8 @@ public class CannonController : MonoBehaviour
     private void Update() 
     {
         Aim();
+
+        OnFireCooldownChanged?.Invoke(this, new OnFireCooldownChangedEventArgs { fireCooldown = fireCooldown, currentFireCooldown = currentFireCooldown });
     }
 
 
@@ -108,7 +120,7 @@ public class CannonController : MonoBehaviour
                 {
                     Fire(leftCannon.transform, leftCannonAngleDirection.targetDirection);
                     OnFire?.Invoke(this, EventArgs.Empty);
-                    OnAnyFire?.Invoke(this, new OnAnyFireEventArgs { firePosition = rightCannon.transform });
+                    OnAnyFire?.Invoke(this, new OnAnyFireEventArgs { firePosition = leftCannon.transform });
                 }
 
                 ResetCharge();
@@ -116,7 +128,14 @@ public class CannonController : MonoBehaviour
                 ResetFireCooldown();
             }
         }
-        else if (currentFireCooldown > 0) currentFireCooldown -= Time.deltaTime;
+        else if (currentFireCooldown > 0) 
+        {
+            currentFireCooldown -= Time.deltaTime;
+            if(currentFireCooldown < 0)
+            {
+                OnFireCooldownEnd.Invoke(this, EventArgs.Empty);
+            }
+        }
     }
 
     private (float, Vector3) CalculateAngleDirectionAndTarget(Transform relationPoint)
