@@ -18,16 +18,16 @@ public class AudioManager : MonoBehaviour
 
     private void OnEnable() 
     {
-        CannonController.OnAnyFire += CannonController_OnAnyFire;    
+        Cannon.OnCannonFire += Cannon_OnCannonFire;    
     }
 
     private void OnDisable() 
     {
-        CannonController.OnAnyFire -= CannonController_OnAnyFire;    
+        Cannon.OnCannonFire -= Cannon_OnCannonFire;    
     }
 
 
-    private void CannonController_OnAnyFire(object sender, CannonController.OnAnyFireEventArgs e)
+    private void Cannon_OnCannonFire(object sender, OnCannonFireEventArgs e)
     {
         AudioClip audioClip = audioList.fireSFX.GetRandomAudioClip();
         AudioSource.PlayClipAtPoint(audioClip, e.firePosition.position);

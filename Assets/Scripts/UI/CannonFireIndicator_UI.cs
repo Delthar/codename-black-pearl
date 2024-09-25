@@ -31,14 +31,14 @@ public class CannonFireIndicator_UI : MonoBehaviour
 
     private void OnEnable()
     {
-        cannonController.OnFire += CannonController_OnFire;
+        // cannonController.OnFire += CannonController_OnFire;
         cannonController.OnFireCooldownChanged += CannonController_OnFireCooldownChanged;
         cannonController.OnFireCooldownEnd += CannonController_OnFireCooldownEnd;
     }
 
     private void OnDisable()
     {
-        cannonController.OnFire -= CannonController_OnFire;
+        // cannonController.OnFire -= CannonController_OnFire;
         cannonController.OnFireCooldownChanged -= CannonController_OnFireCooldownChanged;
         cannonController.OnFireCooldownEnd -= CannonController_OnFireCooldownEnd;
     }
@@ -48,7 +48,7 @@ public class CannonFireIndicator_UI : MonoBehaviour
         foregroundImage.fillAmount = 0;
     }
 
-    private void CannonController_OnFireCooldownChanged(object sender, CannonController.OnFireCooldownChangedEventArgs e)
+    private void CannonController_OnFireCooldownChanged(object sender, OnFireCooldownChangedEventArgs e)
     {
         float normalized = Mathf.InverseLerp(e.fireCooldown, 0, e.currentFireCooldown);
 

@@ -1,32 +1,35 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class CannonController : MonoBehaviour
 {
-    [Header("Static Event")]
-    [Tooltip("Triggers whenever a shot is fired")]
-    [SerializeField] public static EventHandler<OnAnyFireEventArgs> OnAnyFire;
-
     [Header("Events")]
     [Tooltip("")]
-    [SerializeField] public EventHandler OnFire;
+    [SerializeField] public EventHandler<OnFireEventArgs> OnLeftSideFire;
+    [Tooltip("")]
+    [SerializeField] public EventHandler<OnFireEventArgs> OnRightSideFire;
     [Tooltip("")]
     [SerializeField] public EventHandler<OnFireCooldownChangedEventArgs> OnFireCooldownChanged;
     [Tooltip("")]
     [SerializeField] public EventHandler OnFireCooldownEnd;
 
-    [Header("References")]
-    [Tooltip("The reference to the left cannon")]
-    [SerializeField] private GameObject leftCannon;
-    [Tooltip("The reference to the right cannon")]
-    [SerializeField] private GameObject rightCannon;
-    [Tooltip("The reference to the LineRenderer of the GameObject")]
-    [SerializeField] private LineRenderer chargeLine;
+    [Tooltip("")]
+    [SerializeField] private List<Cannon> leftSide;
+    [Tooltip("")]
+    [SerializeField] private List<Cannon> rightSide;
+
+    [Header("Cannon Status")]
+    [Tooltip("The current charged amount that determines the range of the cannonball")]
+    [Range(4, 20)]
+    [SerializeField] private float currentCharge;
+    [Tooltip("The current cooldown before another shot can be made")]
+    [Range(0, 8)]
+    [SerializeField] private float currentFireCooldown;
 
     [Header("Cannon Parameters")]
-    [Tooltip("The angle a cannon can rotate to")]
-    [Range(15, 75)]
-    [SerializeField] private float cannonAngle;
     [Tooltip("The upper limit of charge that determines the maximum range of a shot")]
     [Range(16, 20)]
     [SerializeField] private float maximumCharge;
@@ -43,143 +46,136 @@ public class CannonController : MonoBehaviour
     [Range(2, 8)]
     [SerializeField] private float fireCooldown;
 
-    [Header("Cannon Status")]
-    [Tooltip("The current charged amount that determines the range of the cannonball")]
-    [Range(4, 20)]
-    [SerializeField] private float currentCharge;
-    [Tooltip("The current cooldown before another shot can be made")]
-    [Range(0, 8)]
-    [SerializeField] private float currentFireCooldown;
+    #region Engine Methods
 
-    public class OnAnyFireEventArgs : EventArgs
+    private void OnEnable()
     {
-        public Transform firePosition;
+        leftSide.ForEach(cannon => OnLeftSideFire += cannon.GetComponent<Cannon>().CannonController_OnFire);    
+        rightSide.ForEach(cannon => OnRightSideFire += cannon.GetComponent<Cannon>().CannonController_OnFire);    
     }
 
-    public class OnFireCooldownChangedEventArgs : EventArgs
+    private void Update()
     {
-        public float fireCooldown;
-        public float currentFireCooldown;
+        UpdateFireCooldown();
     }
 
-
-    #if UNITY_EDITOR
-
-    private void OnDrawGizmosSelected() 
+    private void OnDisable()
     {
-        Gizmos.color = Color.black;
-        Gizmos.DrawLine(rightCannon.transform.position, CalculateAngleDirectionTarget(rightCannon.transform, cannonAngle, maximumCharge));    
-        Gizmos.DrawLine(rightCannon.transform.position, CalculateAngleDirectionTarget(rightCannon.transform, -cannonAngle, maximumCharge));    
-        Gizmos.DrawLine(leftCannon.transform.position, CalculateAngleDirectionTarget(leftCannon.transform, cannonAngle, maximumCharge));    
-        Gizmos.DrawLine(leftCannon.transform.position, CalculateAngleDirectionTarget(leftCannon.transform, -cannonAngle, maximumCharge));    
-    }
-    
-    #endif
-
-    private void Update() 
-    {
-        Aim();
-
-        OnFireCooldownChanged?.Invoke(this, new OnFireCooldownChangedEventArgs { fireCooldown = fireCooldown, currentFireCooldown = currentFireCooldown });
+        leftSide.ForEach(cannon => OnLeftSideFire -= cannon.GetComponent<Cannon>().CannonController_OnFire);    
+        rightSide.ForEach(cannon => OnRightSideFire -= cannon.GetComponent<Cannon>().CannonController_OnFire);    
     }
 
+    #endregion
 
-    private void Aim()
+    #region Primary Methods
+
+    public void Aim(Vector3 targetPosition)
+    {
+        float angle = GetTargetAngle(transform.position, targetPosition);
+
+        if (angle < -90 || angle > 90) leftSide.ForEach(cannon => DirectCannon(cannon, GetTargetAngle(cannon.transform.position, targetPosition)));
+        else if (angle < 90 || angle > -90) rightSide.ForEach(cannon => DirectCannon(cannon, GetTargetAngle(cannon.transform.position, targetPosition)));
+    }
+
+    public void Charge()
     {
         if (currentFireCooldown <= 0)
-        {
-            (float angle, Vector3 targetDirection) rightCannonAngleDirection = CalculateAngleDirectionAndTarget(rightCannon.transform);
-            (float angle, Vector3 targetDirection) leftCannonAngleDirection = CalculateAngleDirectionAndTarget(leftCannon.transform);
-
-            if (PlayerInput.Instance.GetFireAction().IsPressed())
-            {
-                if (currentCharge < maximumCharge) currentCharge += Time.deltaTime * chargeMultiplier;
-
-                if (-cannonAngle <= rightCannonAngleDirection.angle && rightCannonAngleDirection.angle <= cannonAngle)
-                {
-                    DrawChargeLine(rightCannon.transform, rightCannon.transform.position + rightCannonAngleDirection.targetDirection * currentCharge, Color.red);    
-                }
-                else if (-cannonAngle <= leftCannonAngleDirection.angle && leftCannonAngleDirection.angle <= cannonAngle)
-                {
-                    DrawChargeLine(leftCannon.transform, leftCannon.transform.position + leftCannonAngleDirection.targetDirection * currentCharge, Color.red);            
-                }
-                else
-                {
-                    DrawChargeLine(transform, transform.position, Color.white);
-                }
-            }
-            else if (PlayerInput.Instance.GetFireAction().WasReleasedThisFrame())
-            {
-                if (-cannonAngle <= rightCannonAngleDirection.angle && rightCannonAngleDirection.angle <= cannonAngle)
-                {
-                    Fire(rightCannon.transform, rightCannonAngleDirection.targetDirection);
-                    OnFire?.Invoke(this, EventArgs.Empty);
-                    OnAnyFire?.Invoke(this, new OnAnyFireEventArgs { firePosition = rightCannon.transform });
-                }
-                else if (-cannonAngle <= leftCannonAngleDirection.angle && leftCannonAngleDirection.angle <= cannonAngle)
-                {
-                    Fire(leftCannon.transform, leftCannonAngleDirection.targetDirection);
-                    OnFire?.Invoke(this, EventArgs.Empty);
-                    OnAnyFire?.Invoke(this, new OnAnyFireEventArgs { firePosition = leftCannon.transform });
-                }
-
-                ResetCharge();
-                ResetChargeLine();
-                ResetFireCooldown();
-            }
+        {   
+            if (currentCharge < maximumCharge) currentCharge += Time.deltaTime * chargeMultiplier;    
         }
-        else if (currentFireCooldown > 0) 
+    }
+
+    public void Fire(Vector3 targetPosition, float? charge)
+    {
+        currentCharge = charge == null ? currentCharge : charge.Value; 
+
+        float angle = GetTargetAngle(transform.position, targetPosition);
+        
+        if (angle < -90 || angle > 90) 
+        {
+            StartCoroutine(FireSalveRoutine(rightSide, targetPosition));
+        }
+        if (angle < 90 || angle > -90) 
+        {
+            StartCoroutine(FireSalveRoutine(leftSide, targetPosition));
+        }
+
+        
+    }
+
+    private IEnumerator FireSalveRoutine(List<Cannon> cannonSide, Vector3 targetPosition)
+    { 
+        for (int i = cannonSide.Count() - 1; i >= 0; i--)
+        {
+            cannonSide[i].Fire(new OnFireEventArgs(cannonSide[i], gameObject, targetPosition, fireForce, currentCharge));
+            yield return new WaitForSeconds(0.25f);
+        }
+        RevertCharge();
+        RevertFireCooldown();
+    }
+
+    #endregion
+
+    #region Helper Methods
+
+    private void DirectCannon(Cannon cannon, float angle) => cannon.transform.localRotation = Quaternion.AngleAxis(angle, Vector3.forward);
+
+    private float GetTargetAngle(Vector3 originPosition, Vector3 targetPosition)
+    {
+        Vector3 direction = transform.InverseTransformDirection((targetPosition - originPosition).normalized);
+
+        return Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+    }
+
+    #endregion
+
+    #region Invocation Methods
+
+    private void InvokeLeftSideFire(Vector2 targetPosition, Cannon cannon) => OnLeftSideFire?.Invoke(this, new OnFireEventArgs(cannon, gameObject, targetPosition, fireForce, currentCharge)); 
+    
+    private void InvokeRightSideFire(Vector2 targetPosition, Cannon cannon) => OnRightSideFire?.Invoke(this, new OnFireEventArgs(cannon, gameObject, targetPosition, fireForce, currentCharge)); 
+
+    private void InvokeFireCooldownChanged() => OnFireCooldownChanged?.Invoke(this, new OnFireCooldownChangedEventArgs(fireCooldown, currentFireCooldown));
+    
+    private void InvokeFireCooldownEnd() => OnFireCooldownEnd.Invoke(this, EventArgs.Empty);
+
+    #endregion
+
+    #region Update Methods
+
+    private void UpdateFireCooldown()
+    {
+        if (currentFireCooldown > 0)
         {
             currentFireCooldown -= Time.deltaTime;
-            if(currentFireCooldown < 0)
-            {
-                OnFireCooldownEnd.Invoke(this, EventArgs.Empty);
-            }
+
+            if (currentFireCooldown < 0) InvokeFireCooldownEnd();
         }
+
+        InvokeFireCooldownChanged();
     }
 
-    private (float, Vector3) CalculateAngleDirectionAndTarget(Transform relationPoint)
-    {
-        Vector3 worldDirection = GetMouseDirection(relationPoint);
-        Vector3 localDirection = relationPoint.InverseTransformDirection(worldDirection).normalized;
-        float angle = Mathf.Atan2(localDirection.y, localDirection.x) * Mathf.Rad2Deg;
-        Vector3 targetDirection = relationPoint.rotation * new Vector3(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad), 0);
+    #endregion
 
-        return (angle, targetDirection);
-    }
+    #region Revert Methods
 
-    private Vector3 CalculateAngleDirectionTarget(Transform relationPoint, float angle, float range) => relationPoint.position + relationPoint.rotation * new Vector3(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad), 0) * range;  
-    
-    private Vector3 GetMouseDirection(Transform relationPoint)
-    {
-        Vector3 direction = Utils.GetMouseWorldPosition() - relationPoint.position;
-        direction.z = 0;
-        return direction.normalized;
-    }
+    private void RevertCharge() => currentCharge = minimumCharge;
 
-    private void DrawChargeLine(Transform relationPoint, Vector3 targetDirection, Color lineColor)
-    {
-        chargeLine.SetPosition(0, new Vector3(relationPoint.position.x, relationPoint.position.y, 0));
-        chargeLine.SetPosition(1, targetDirection);
-        chargeLine.startColor = lineColor;
-        chargeLine.endColor = lineColor;
-    }
+    private void RevertFireCooldown() => currentFireCooldown = fireCooldown;
 
-    private void ResetChargeLine()
-    {
-        chargeLine.SetPosition(0, transform.position);
-        chargeLine.SetPosition(1, transform.position);
-    }
-
-    private void ResetCharge() => currentCharge = minimumCharge;
-
-    private void ResetFireCooldown() => currentFireCooldown = fireCooldown;
-
-    private void Fire(Transform relationPoint, Vector2 targetDirection)
-    {
-        GameObject cannonball = ObjectPool.Instance.GetPoolObject();
-
-        cannonball.GetComponent<IPoolable>().Initialize(relationPoint);
-        cannonball.GetComponent<IFireable>().Fire(gameObject, targetDirection, fireForce, currentCharge);   
-    }
+    #endregion
 }
+
+    // private void DrawChargeLine(Transform relationPoint, Vector3 targetDirection, Color lineColor)
+    // {
+    //     chargeLine.SetPosition(0, new Vector3(relationPoint.position.x, relationPoint.position.y, 0));
+    //     chargeLine.SetPosition(1, targetDirection);
+    //     chargeLine.startColor = lineColor;
+    //     chargeLine.endColor = lineColor;
+    // }
+
+    // private void ResetChargeLine()
+    // {
+    //     chargeLine.SetPosition(0, transform.position);
+    //     chargeLine.SetPosition(1, transform.position);
+    // }
